@@ -79,6 +79,19 @@
             text-shadow: 2px 2px 4px #000;
             display: none;
         }
+        #progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        #progress {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+        }
         #feed {
             width: 100%;
             max-width: 500px;
@@ -136,6 +149,9 @@
             <video id="video" autoplay></video>
             <video id="small-video" autoplay></video>
             <div id="countdown"></div>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
             <div id="controls">
                 <button id="capture">撮影</button>
                 <select id="filter">
@@ -159,6 +175,8 @@
             const filterSelect = document.getElementById('filter');
             const feed = document.getElementById('feed');
             const countdown = document.getElementById('countdown');
+            const progressBar = document.getElementById('progress');
+            const progressBarContainer = document.getElementById('progress-bar');
 
             let currentStream;
             let facingMode = "environment";
@@ -199,15 +217,26 @@
             });
 
             function captureFirstImage() {
-                captureImage().then(imageData => {
-                    firstImageData = imageData;
-                    facingMode = "user";
-                    startCamera();
+                progressBar.style.width = '0%';
+                progressBarContainer.style.display = 'block';
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5; // 5%ずつ進む例
+                    progressBar.style.width = `${progress}%`;
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        progressBarContainer.style.display = 'none';
+                        captureImage().then(imageData => {
+                            firstImageData = imageData;
+                            facingMode = "user";
+                            startCamera();
 
-                    setTimeout(() => {
-                        captureSecondImage();
-                    }, 3000);
-                });
+                            setTimeout(() => {
+                                captureSecondImage();
+                            }, 3000);
+                        });
+                    }
+                }, 100);
             }
 
             function captureSecondImage() {
@@ -279,3 +308,4 @@
     </script>
 </body>
 </html>
+
