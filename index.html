@@ -48,7 +48,7 @@
             border: 2px solid #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            display: none; /* 最初は非表示 */
+            cursor: pointer;
         }
         #controls {
             display: flex;
@@ -209,9 +209,7 @@
             function captureFirstImage() {
                 captureImage().then(imageData => {
                     firstImageData = imageData;
-                    facingMode = "user";
                     startCamera();
-
                     setTimeout(() => {
                         captureSecondImage();
                     }, 3000);
@@ -221,7 +219,6 @@
             function captureSecondImage() {
                 captureImage().then(secondImageData => {
                     displayImages(firstImageData, secondImageData);
-                    facingMode = "environment";
                     startCamera();
                 });
             }
@@ -283,6 +280,15 @@
 
                 feed.prepend(post);
             }
+
+            smallVideo.addEventListener('click', () => {
+                if (facingMode === "environment") {
+                    facingMode = "user";
+                } else {
+                    facingMode = "environment";
+                }
+                startCamera();
+            });
         });
     </script>
 </body>
