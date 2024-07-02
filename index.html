@@ -135,14 +135,14 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 40px; /* Increased size */
-            height: 40px; /* Increased size */
-            font-size: 24px; /* Increased font size */
-            line-height: 40px; /* Adjust line height */
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            line-height: 40px;
             text-align: center;
             cursor: pointer;
-            overflow: hidden; /* Ensure text does not overflow */
-            text-overflow: ellipsis; /* Handle any overflow gracefully */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .post-menu:hover {
             background-color: rgba(0, 0, 0, 0.7);
@@ -177,8 +177,8 @@
     </header>
     <main>
         <section id="camera">
-            <video id="video" autoplay></video>
-            <video id="small-video" autoplay></video>
+            <video id="video" autoplay playsinline></video>
+            <video id="small-video" autoplay playsinline></video>
             <div id="countdown"></div>
             <div id="controls">
                 <button id="capture">撮影</button>
@@ -219,13 +219,13 @@
                             currentStream = stream;
                             video.srcObject = stream;
                             video.play();
-                            currentCamera = facingMode;
                             video.onloadedmetadata = () => {
                                 resolve();
                             };
                         })
                         .catch(err => {
                             console.error('カメラの起動に失敗しました:', err);
+                            alert('カメラの起動に失敗しました。カメラのアクセス権を許可してください。');
                             reject(err);
                         });
                 });
@@ -236,26 +236,23 @@
                 return startCamera();
             }
 
-            startCamera();
+            startCamera().then(() => {
+                console.log('カメラが正常に起動しました。');
+            }).catch(err => {
+                console.error('カメラの起動中にエラーが発生しました:', err);
+            });
 
             captureButton.addEventListener('click', () => {
-                startCamera().then(() => {
-                    countdown.style.display = 'block';
-                    countdown.textContent = '3';
-
-                    const countdownInterval = setInterval(() => {
-                        const currentCount = parseInt(countdown.textContent);
-                        if (currentCount > 1) {
-                            countdown.textContent = (currentCount - 1).toString();
-                        } else {
-                            clearInterval(countdownInterval);
-                            countdown.style.display = 'none';
-                            captureFirstImage();
-                        }
-                    }, 1000);
-                }).catch(err => {
-                    console.error('カメラの準備中にエラーが発生しました:', err);
-                });
+                countdown.textContent = '3';
+                countdown.style.display = 'block';
+                const countdownInterval = setInterval(() => {
+                    countdown.textContent = (parseInt(countdown.textContent) - 1).toString();
+                    if (countdown.textContent === '0') {
+                        clearInterval(countdownInterval);
+                        countdown.style.display = 'none';
+                        captureFirstImage();
+                    }
+                }, 1000);
             });
 
             function captureFirstImage() {
