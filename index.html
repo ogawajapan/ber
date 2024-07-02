@@ -48,7 +48,7 @@
             border: 2px solid #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
+            display: none; /* 最初は非表示 */
         }
         #controls {
             display: flex;
@@ -190,26 +190,29 @@
             startCamera();
 
             captureButton.addEventListener('click', () => {
-                let count = 3;
                 countdown.style.display = 'block';
-                countdown.textContent = count;
+                countdown.textContent = '3';
 
-                const countdownInterval = setInterval(() => {
-                    count--;
-                    if (count > 0) {
-                        countdown.textContent = count;
-                    } else {
-                        clearInterval(countdownInterval);
-                        countdown.style.display = 'none';
-                        captureFirstImage();
-                    }
+                setTimeout(() => {
+                    countdown.textContent = '2';
                 }, 1000);
+
+                setTimeout(() => {
+                    countdown.textContent = '1';
+                }, 2000);
+
+                setTimeout(() => {
+                    countdown.style.display = 'none';
+                    captureFirstImage();
+                }, 3000);
             });
 
             function captureFirstImage() {
                 captureImage().then(imageData => {
                     firstImageData = imageData;
+                    facingMode = "user";
                     startCamera();
+
                     setTimeout(() => {
                         captureSecondImage();
                     }, 3000);
@@ -219,6 +222,7 @@
             function captureSecondImage() {
                 captureImage().then(secondImageData => {
                     displayImages(firstImageData, secondImageData);
+                    facingMode = "environment";
                     startCamera();
                 });
             }
@@ -280,15 +284,6 @@
 
                 feed.prepend(post);
             }
-
-            smallVideo.addEventListener('click', () => {
-                if (facingMode === "environment") {
-                    facingMode = "user";
-                } else {
-                    facingMode = "environment";
-                }
-                startCamera();
-            });
         });
     </script>
 </body>
