@@ -43,12 +43,12 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 30%; /* スマートフォンの画面に合わせて調整可能 */
-            max-width: 150px; /* 最大幅を指定して、適切なサイズに保つ */
+            width: 30%;
+            max-width: 150px;
             border: 2px solid #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            display: none; /* 最初は非表示 */
+            display: none;
         }
         #controls {
             display: flex;
@@ -139,8 +139,7 @@
             <video id="small-video" autoplay></video>
             <div id="countdown"></div>
             <div id="controls">
-                <button id="capture">外カメを撮影</button>
-                <button id="switchCamera">内カメに切り替えて撮影</button>
+                <button id="capture">撮影</button>
                 <select id="filter">
                     <option value="none">フィルターなし</option>
                     <option value="grayscale">グレースケール</option>
@@ -159,13 +158,13 @@
             const video = document.getElementById('video');
             const smallVideo = document.getElementById('small-video');
             const captureButton = document.getElementById('capture');
-            const switchCameraButton = document.getElementById('switchCamera');
             const filterSelect = document.getElementById('filter');
             const feed = document.getElementById('feed');
             const countdown = document.getElementById('countdown');
 
             let currentStream;
             let facingMode = "environment";
+            let currentCamera = "environment";
             let firstImageData;
 
             function startCamera() {
@@ -176,46 +175,54 @@
                     .then(stream => {
                         currentStream = stream;
                         video.srcObject = stream;
-                        if (facingMode === "environment") {
-                            video.style.display = 'block';
-                            smallVideo.style.display = 'none';
-                        } else {
-                            video.style.display = 'none';
-                            smallVideo.style.display = 'block';
-                        }
+                        video.play();
+                        currentCamera = facingMode;
                     })
                     .catch(err => {
                         console.error('カメラの起動に失敗しました:', err);
                     });
             }
 
+            function switchCamera() {
+                facingMode = currentCamera === "environment" ? "user" : "environment";
+                startCamera();
+            }
+
             startCamera();
 
             captureButton.addEventListener('click', () => {
-                let count = 3;
                 countdown.style.display = 'block';
-                countdown.textContent = count;
+                countdown.textContent = '3';
 
-                const countdownInterval = setInterval(() => {
-                    count--;
-                    if (count > 0) {
-                        countdown.textContent = count;
-                    } else {
-                        clearInterval(countdownInterval);
-                        countdown.style.display = 'none';
-                        captureFirstImage();
-                    }
+                setTimeout(() => {
+                    countdown.textContent = '2';
                 }, 1000);
-            });
 
-            switchCameraButton.addEventListener('click', () => {
-                facingMode = (facingMode === "environment") ? "user" : "environment";
-                startCamera();
+                setTimeout(() => {
+                    countdown.textContent = '1';
+                }, 2000);
+
+                setTimeout(() => {
+                    countdown.style.display = 'none';
+                    captureFirstImage();
+                }, 3000);
             });
 
             function captureFirstImage() {
                 captureImage().then(imageData => {
                     firstImageData = imageData;
+                    switchCamera();
+
+                    setTimeout(() => {
+                        captureSecondImage();
+                    }, 3000);
+                });
+            }
+
+            function captureSecondImage() {
+                captureImage().then(secondImageData => {
+                    displayImages(firstImageData, secondImageData);
+                    switchCamera();
                 });
             }
 
