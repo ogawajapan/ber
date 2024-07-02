@@ -135,10 +135,10 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 20px;
-            line-height: 30px;
+            width: 40px; /* Increased size */
+            height: 40px; /* Increased size */
+            font-size: 24px; /* Increased font size */
+            line-height: 40px; /* Adjust line height */
             text-align: center;
             cursor: pointer;
         }
@@ -340,30 +340,7 @@
                     post.remove();
                 });
 
-                const commentForm = document.createElement('form');
-                commentForm.className = 'comment-form';
-                commentForm.innerHTML = `
-                    <input type="text" placeholder="コメントを追加">
-                    <button type="submit">送信</button>
-                `;
-                const comments = document.createElement('div');
-                comments.className = 'comments';
-
-                commentForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const input = commentForm.querySelector('input');
-                    if (input.value.trim()) {
-                        const comment = document.createElement('p');
-                        comment.textContent = input.value;
-                        comments.appendChild(comment);
-                        input.value = '';
-                    }
-                });
-
-                post.appendChild(commentForm);
-                post.appendChild(comments);
-
-                feed.prepend(post);
+                feed.appendChild(post);
             }
         });
     </script>
