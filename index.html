@@ -135,8 +135,8 @@
     </header>
     <main>
         <section id="camera">
-            <video id="video" autoplay></video>
-            <video id="small-video" autoplay></video>
+            <video id="video" autoplay muted playsinline></video>
+            <video id="small-video" autoplay muted playsinline></video>
             <div id="countdown"></div>
             <div id="controls">
                 <button id="capture">撮影</button>
@@ -181,6 +181,7 @@
                             video.style.display = 'none';
                             smallVideo.style.display = 'block';
                         }
+                        video.play(); // 自動再生のために追加
                     })
                     .catch(err => {
                         console.error('カメラの起動に失敗しました:', err);
