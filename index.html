@@ -168,54 +168,64 @@
             let firstImageData;
 
             function startCamera() {
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                }
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } })
-                    .then(stream => {
-                        currentStream = stream;
-                        video.srcObject = stream;
-                        video.play();
-                        currentCamera = facingMode;
-                    })
-                    .catch(err => {
-                        console.error('カメラの起動に失敗しました:', err);
-                    });
+                return new Promise((resolve, reject) => {
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                    }
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } })
+                        .then(stream => {
+                            currentStream = stream;
+                            video.srcObject = stream;
+                            video.play();
+                            currentCamera = facingMode;
+                            video.onloadedmetadata = () => {
+                                resolve();
+                            };
+                        })
+                        .catch(err => {
+                            console.error('カメラの起動に失敗しました:', err);
+                            reject(err);
+                        });
+                });
             }
 
             function switchCamera() {
                 facingMode = currentCamera === "environment" ? "user" : "environment";
-                startCamera();
+                return startCamera();
             }
 
             startCamera();
 
             captureButton.addEventListener('click', () => {
-                countdown.style.display = 'block';
-                countdown.textContent = '3';
+                startCamera().then(() => {
+                    countdown.style.display = 'block';
+                    countdown.textContent = '3';
 
-                setTimeout(() => {
-                    countdown.textContent = '2';
-                }, 1000);
+                    setTimeout(() => {
+                        countdown.textContent = '2';
+                    }, 1000);
 
-                setTimeout(() => {
-                    countdown.textContent = '1';
-                }, 2000);
+                    setTimeout(() => {
+                        countdown.textContent = '1';
+                    }, 2000);
 
-                setTimeout(() => {
-                    countdown.style.display = 'none';
-                    captureFirstImage();
-                }, 3000);
+                    setTimeout(() => {
+                        countdown.style.display = 'none';
+                        captureFirstImage();
+                    }, 3000);
+                }).catch(err => {
+                    console.error('カメラの準備中にエラーが発生しました:', err);
+                });
             });
 
             function captureFirstImage() {
                 captureImage().then(imageData => {
                     firstImageData = imageData;
-                    switchCamera();
-
-                    setTimeout(() => {
-                        captureSecondImage();
-                    }, 3000);
+                    switchCamera().then(() => {
+                        setTimeout(() => {
+                            captureSecondImage();
+                        }, 3000);
+                    });
                 });
             }
 
