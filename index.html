@@ -127,11 +127,11 @@
             margin-top: 1rem;
             padding: 0 1rem;
         }
-        .delete-button {
+        .post-menu {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: rgba(255, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
             border: none;
             border-radius: 50%;
@@ -142,8 +142,30 @@
             text-align: center;
             cursor: pointer;
         }
-        .delete-button:hover {
-            background-color: rgba(255, 0, 0, 1);
+        .post-menu:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .menu-options {
+            position: absolute;
+            top: 45px;
+            right: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .menu-options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+        .menu-options button:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -284,13 +306,39 @@
                 overlayImg.className = 'overlay';
                 post.appendChild(overlayImg);
 
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'delete-button';
-                deleteButton.textContent = '×';
-                deleteButton.addEventListener('click', () => {
+                const menuButton = document.createElement('button');
+                menuButton.className = 'post-menu';
+                menuButton.textContent = '...';
+                post.appendChild(menuButton);
+
+                const menuOptions = document.createElement('div');
+                menuOptions.className = 'menu-options';
+                menuOptions.innerHTML = `
+                    <button class="save-button">保存</button>
+                    <button class="delete-button">削除</button>
+                `;
+                post.appendChild(menuOptions);
+
+                menuButton.addEventListener('click', () => {
+                    menuOptions.style.display = menuOptions.style.display === 'none' ? 'block' : 'none';
+                });
+
+                menuOptions.querySelector('.save-button').addEventListener('click', () => {
+                    const link = document.createElement('a');
+                    link.href = firstImageData;
+                    link.download = 'BeReal_main.jpg';
+                    link.click();
+                    
+                    link.href = secondImageData;
+                    link.download = 'BeReal_overlay.jpg';
+                    link.click();
+                    
+                    menuOptions.style.display = 'none';
+                });
+
+                menuOptions.querySelector('.delete-button').addEventListener('click', () => {
                     post.remove();
                 });
-                post.appendChild(deleteButton);
 
                 const commentForm = document.createElement('form');
                 commentForm.className = 'comment-form';
