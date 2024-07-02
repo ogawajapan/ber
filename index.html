@@ -141,6 +141,8 @@
             line-height: 40px; /* Adjust line height */
             text-align: center;
             cursor: pointer;
+            overflow: hidden; /* Ensure text does not overflow */
+            text-overflow: ellipsis; /* Handle any overflow gracefully */
         }
         .post-menu:hover {
             background-color: rgba(0, 0, 0, 0.7);
