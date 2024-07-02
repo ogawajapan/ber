@@ -39,6 +39,15 @@
             width: 100%;
             height: auto;
         }
+        #small-video {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 30%;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
         #controls {
             display: flex;
             justify-content: space-between;
@@ -125,6 +134,7 @@
     <main>
         <section id="camera">
             <video id="video" autoplay></video>
+            <video id="small-video" autoplay></video>
             <div id="countdown"></div>
             <div id="controls">
                 <button id="capture">撮影</button>
@@ -144,6 +154,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('video');
+            const smallVideo = document.getElementById('small-video');
             const captureButton = document.getElementById('capture');
             const filterSelect = document.getElementById('filter');
             const feed = document.getElementById('feed');
@@ -161,6 +172,7 @@
                     .then(stream => {
                         currentStream = stream;
                         video.srcObject = stream;
+                        smallVideo.srcObject = stream; // 小窓にも同じストリームを設定
                     })
                     .catch(err => {
                         console.error('カメラの起動に失敗しました:', err);
