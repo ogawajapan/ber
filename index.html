@@ -48,6 +48,7 @@
             border: 2px solid #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: none; /* 最初は非表示 */
         }
         #controls {
             display: flex;
@@ -173,7 +174,13 @@
                     .then(stream => {
                         currentStream = stream;
                         video.srcObject = stream;
-                        smallVideo.srcObject = stream; // 小窓にも同じストリームを設定
+                        if (facingMode === "environment") {
+                            video.style.display = 'block';
+                            smallVideo.style.display = 'none';
+                        } else {
+                            video.style.display = 'none';
+                            smallVideo.style.display = 'block';
+                        }
                     })
                     .catch(err => {
                         console.error('カメラの起動に失敗しました:', err);
