@@ -127,6 +127,24 @@
             margin-top: 1rem;
             padding: 0 1rem;
         }
+        .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: rgba(255, 0, 0, 1);
+        }
     </style>
 </head>
 <body>
@@ -201,18 +219,16 @@
                     countdown.style.display = 'block';
                     countdown.textContent = '3';
 
-                    setTimeout(() => {
-                        countdown.textContent = '2';
+                    const countdownInterval = setInterval(() => {
+                        const currentCount = parseInt(countdown.textContent);
+                        if (currentCount > 1) {
+                            countdown.textContent = (currentCount - 1).toString();
+                        } else {
+                            clearInterval(countdownInterval);
+                            countdown.style.display = 'none';
+                            captureFirstImage();
+                        }
                     }, 1000);
-
-                    setTimeout(() => {
-                        countdown.textContent = '1';
-                    }, 2000);
-
-                    setTimeout(() => {
-                        countdown.style.display = 'none';
-                        captureFirstImage();
-                    }, 3000);
                 }).catch(err => {
                     console.error('カメラの準備中にエラーが発生しました:', err);
                 });
@@ -267,6 +283,14 @@
                 overlayImg.src = secondImageData;
                 overlayImg.className = 'overlay';
                 post.appendChild(overlayImg);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-button';
+                deleteButton.textContent = '×';
+                deleteButton.addEventListener('click', () => {
+                    post.remove();
+                });
+                post.appendChild(deleteButton);
 
                 const commentForm = document.createElement('form');
                 commentForm.className = 'comment-form';
