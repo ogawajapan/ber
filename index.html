@@ -190,21 +190,25 @@
             startCamera();
 
             captureButton.addEventListener('click', () => {
-                countdown.style.display = 'block';
-                countdown.textContent = '3';
+                startCamera(); // カメラを再起動することでブラウザの挙動をリセット
+
+                setTimeout(() => {
+                    countdown.style.display = 'block';
+                    countdown.textContent = '3';
+                }, 100);
 
                 setTimeout(() => {
                     countdown.textContent = '2';
-                }, 1000);
+                }, 1100);
 
                 setTimeout(() => {
                     countdown.textContent = '1';
-                }, 2000);
+                }, 2100);
 
                 setTimeout(() => {
                     countdown.style.display = 'none';
                     captureFirstImage();
-                }, 3000);
+                }, 3100);
             });
 
             function captureFirstImage() {
