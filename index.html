@@ -135,11 +135,12 @@
     </header>
     <main>
         <section id="camera">
-            <video id="video" autoplay muted playsinline></video>
-            <video id="small-video" autoplay muted playsinline></video>
+            <video id="video" autoplay></video>
+            <video id="small-video" autoplay></video>
             <div id="countdown"></div>
             <div id="controls">
-                <button id="capture">撮影</button>
+                <button id="capture">外カメを撮影</button>
+                <button id="switchCamera">内カメに切り替えて撮影</button>
                 <select id="filter">
                     <option value="none">フィルターなし</option>
                     <option value="grayscale">グレースケール</option>
@@ -158,6 +159,7 @@
             const video = document.getElementById('video');
             const smallVideo = document.getElementById('small-video');
             const captureButton = document.getElementById('capture');
+            const switchCameraButton = document.getElementById('switchCamera');
             const filterSelect = document.getElementById('filter');
             const feed = document.getElementById('feed');
             const countdown = document.getElementById('countdown');
@@ -181,7 +183,6 @@
                             video.style.display = 'none';
                             smallVideo.style.display = 'block';
                         }
-                        video.play(); // 自動再生のために追加
                     })
                     .catch(err => {
                         console.error('カメラの起動に失敗しました:', err);
@@ -191,44 +192,30 @@
             startCamera();
 
             captureButton.addEventListener('click', () => {
-                startCamera(); // カメラを再起動することでブラウザの挙動をリセット
+                let count = 3;
+                countdown.style.display = 'block';
+                countdown.textContent = count;
 
-                setTimeout(() => {
-                    countdown.style.display = 'block';
-                    countdown.textContent = '3';
-                }, 100);
+                const countdownInterval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdown.textContent = count;
+                    } else {
+                        clearInterval(countdownInterval);
+                        countdown.style.display = 'none';
+                        captureFirstImage();
+                    }
+                }, 1000);
+            });
 
-                setTimeout(() => {
-                    countdown.textContent = '2';
-                }, 1100);
-
-                setTimeout(() => {
-                    countdown.textContent = '1';
-                }, 2100);
-
-                setTimeout(() => {
-                    countdown.style.display = 'none';
-                    captureFirstImage();
-                }, 3100);
+            switchCameraButton.addEventListener('click', () => {
+                facingMode = (facingMode === "environment") ? "user" : "environment";
+                startCamera();
             });
 
             function captureFirstImage() {
                 captureImage().then(imageData => {
                     firstImageData = imageData;
-                    facingMode = "user";
-                    startCamera();
-
-                    setTimeout(() => {
-                        captureSecondImage();
-                    }, 3000);
-                });
-            }
-
-            function captureSecondImage() {
-                captureImage().then(secondImageData => {
-                    displayImages(firstImageData, secondImageData);
-                    facingMode = "environment";
-                    startCamera();
                 });
             }
 
